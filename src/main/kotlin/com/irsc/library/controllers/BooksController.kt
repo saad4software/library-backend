@@ -1,13 +1,14 @@
 package com.irsc.library.controllers
 
-import com.irsc.library.BooksRepository
+import com.irsc.library.repositories.BooksRepository
 import com.irsc.library.models.BookModel
-import com.irsc.library.util.BookNotFoundException
+import com.irsc.library.util.NotFoundException
+import org.hibernate.internal.util.collections.CollectionHelper.listOf
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
-internal class EmployeeController(repository: BooksRepository) {
+internal class BooksController(repository: BooksRepository) {
     private val repository: BooksRepository
 
     init {
@@ -17,13 +18,13 @@ internal class EmployeeController(repository: BooksRepository) {
     // Aggregate root
     // tag::get-aggregate-root[]
     @GetMapping("/books")
-    fun all(): List<BookModel?> {
+    fun all(): Iterable<BookModel?> {
         return repository.findAll()
     }
 
     // end::get-aggregate-root[]
     @PostMapping("/books")
-    fun newEmployee(@RequestBody newBook: BookModel): BookModel {
+    fun newItem(@RequestBody newBook: BookModel): BookModel {
         return repository.save(newBook)
     }
 
@@ -31,11 +32,11 @@ internal class EmployeeController(repository: BooksRepository) {
     @GetMapping("/books/{id}")
     fun one(@PathVariable id: Long): BookModel {
         return repository.findById(id)
-            .orElseThrow { BookNotFoundException(id) }!!
+            .orElseThrow { NotFoundException("book",id) }!!
     }
 
-    @PutMapping("/employees/{id}")
-    fun replaceEmployee(@RequestBody newBook: BookModel, @PathVariable id: Long): BookModel {
+    @PutMapping("/books/{id}")
+    fun replaceItem(@RequestBody newBook: BookModel, @PathVariable id: Long): BookModel {
         return repository.findById(id)
             .map { book ->
                 book?.title = newBook.title
@@ -50,7 +51,7 @@ internal class EmployeeController(repository: BooksRepository) {
     }
 
     @DeleteMapping("/employees/{id}")
-    fun deleteEmployee(@PathVariable id: Long) {
+    fun deleteItem(@PathVariable id: Long) {
         repository.deleteById(id)
     }
 }

@@ -1,8 +1,8 @@
 package com.irsc.library.models
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
+import com.fasterxml.jackson.annotation.JsonIgnore
+import jakarta.persistence.*
+import java.util.*
 
 @Entity
 class BookModel(
@@ -14,7 +14,12 @@ class BookModel(
 
     @Id
     @GeneratedValue
-    var id:Long = 0
+    var id:Long = 1
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book")
+    var records: List<RecordModel> = ArrayList()
+
 
     override fun equals(other: Any?): Boolean {
         return super.equals((other as? BookModel)?.id == id)
